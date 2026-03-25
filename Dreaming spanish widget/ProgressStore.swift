@@ -54,6 +54,8 @@ final class ProgressStore {
         data.streakDays = scraped.streakDays
         data.dailyGoalMinutes = scraped.dailyGoalMinutes
         data.dailyGoalProgress = scraped.dailyGoalProgress
+        if let l = scraped.currentLevel  { data.currentLevel  = l }
+        if let h = scraped.nextLevelHours { data.nextLevelHours = h }
         data.lastUpdated = Date()
         data.isLoggedIn = true
         isSyncing = false
@@ -163,7 +165,9 @@ final class BackgroundScraper: NSObject, WKScriptMessageHandler, WKNavigationDel
             todayMinutes: asInt(body["todayMinutes"]),
             streakDays: asInt(body["streakDays"]),
             dailyGoalMinutes: max(asInt(body["dailyGoalMinutes"]), 1),
-            dailyGoalProgress: body["dailyGoalProgress"] as? Double ?? 0
+            dailyGoalProgress: body["dailyGoalProgress"] as? Double ?? 0,
+            currentLevel: body["currentLevel"] as? String,
+            nextLevelHours: body["nextLevelHours"] as? Double
         )
         finish(result)
     }

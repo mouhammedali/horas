@@ -26,12 +26,17 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
         guard let body = message.body as? [String: Any] else { return }
 
         if message.name == "progressData" {
+            let asInt: (Any?) -> Int = { v in
+                (v as? Int) ?? (v as? Double).map { Int($0) } ?? 0
+            }
             let scraped = ScrapedProgress(
                 totalHours: body["totalHours"] as? Double ?? 0,
-                todayMinutes: body["todayMinutes"] as? Int ?? (body["todayMinutes"] as? Double).map { Int($0) } ?? 0,
-                streakDays: body["streakDays"] as? Int ?? (body["streakDays"] as? Double).map { Int($0) } ?? 0,
-                dailyGoalMinutes: body["dailyGoalMinutes"] as? Int ?? (body["dailyGoalMinutes"] as? Double).map { Int($0) } ?? 30,
-                dailyGoalProgress: body["dailyGoalProgress"] as? Double ?? 0
+                todayMinutes: asInt(body["todayMinutes"]),
+                streakDays: asInt(body["streakDays"]),
+                dailyGoalMinutes: max(asInt(body["dailyGoalMinutes"]), 1),
+                dailyGoalProgress: body["dailyGoalProgress"] as? Double ?? 0,
+                currentLevel: body["currentLevel"] as? String,
+                nextLevelHours: body["nextLevelHours"] as? Double
             )
             DispatchQueue.main.async { self.onProgressReceived?(scraped) }
         }
@@ -208,17 +213,24 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
             }
         }
 
-        // --- Total hours ---
+        // --- Total hours + level progression ---
         // ds-overall-progression-card__info-label elements are:
         //   [0] "Level N"  [1] "<user_hours> hrs"  [2] "level start hrs"  [3] "level end hrs"
-        // We pick the first element that contains "hrs" — that's the user's accumulated total.
+        var currentLevel = '';
+        var nextLevelHours = 0;
         var infoLabels = document.querySelectorAll('.ds-overall-progression-card__info-label');
-        for (var i = 0; i < infoLabels.length; i++) {
-            var t = textOf(infoLabels[i]);
-            if (t.includes('hrs') || t.includes('hr')) {
-                var n = parseFloat(t.replace(/,/g, '').match(/[\\d.]+/) || ['0'][0]);
-                if (n > 0) { totalHours = n; break; }
-            }
+        if (infoLabels.length >= 1) {
+            currentLevel = textOf(infoLabels[0]);
+        }
+        if (infoLabels.length >= 2) {
+            var t = textOf(infoLabels[1]);
+            var n = parseFloat((t.replace(/,/g, '').match(/[\\d.]+/) || ['0'])[0]);
+            if (n > 0) totalHours = n;
+        }
+        if (infoLabels.length >= 4) {
+            var t = textOf(infoLabels[3]);
+            var n = parseFloat((t.replace(/,/g, '').match(/[\\d.]+/) || ['0'])[0]);
+            if (n > 0) nextLevelHours = n;
         }
 
         // --- Streak (weeks) ---
@@ -236,7 +248,9 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
             todayMinutes: todayMinutes,
             streakDays: streakDays,
             dailyGoalMinutes: dailyGoalMinutes,
-            dailyGoalProgress: dailyGoalProgress
+            dailyGoalProgress: dailyGoalProgress,
+            currentLevel: currentLevel,
+            nextLevelHours: nextLevelHours
         });
     })();
     """

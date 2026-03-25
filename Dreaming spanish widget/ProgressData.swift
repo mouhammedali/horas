@@ -28,6 +28,10 @@ struct ProgressData: Codable {
     var dailyGoalMinutes: Int
     var dailyGoalProgress: Double
 
+    // Level progression (optional — nil if not yet scraped)
+    var currentLevel: String?
+    var nextLevelHours: Double?
+
     // Manually logged outside DS
     var outsideMinutesToday: Int
 
@@ -45,6 +49,11 @@ struct ProgressData: Codable {
         return min(Double(totalTodayMinutes) / Double(dailyGoalMinutes), 1.0)
     }
 
+    var hoursToNextLevel: Double? {
+        guard let nextLevelHours, nextLevelHours > 0 else { return nil }
+        return max(nextLevelHours - totalHours, 0)
+    }
+
     static var placeholder: ProgressData {
         ProgressData(
             totalHours: 0,
@@ -52,6 +61,8 @@ struct ProgressData: Codable {
             streakDays: 0,
             dailyGoalMinutes: 30,
             dailyGoalProgress: 0,
+            currentLevel: nil,
+            nextLevelHours: nil,
             outsideMinutesToday: 0,
             lastUpdated: Date(),
             isLoggedIn: false
@@ -66,6 +77,8 @@ struct ScrapedProgress {
     var streakDays: Int
     var dailyGoalMinutes: Int
     var dailyGoalProgress: Double
+    var currentLevel: String? = nil
+    var nextLevelHours: Double? = nil
 
     // Parse a DS API JSON response (same logic as LoginWebView.parseAPIResponse
     // but shared so the widget extension can use it without WKWebView)
@@ -103,6 +116,18 @@ struct ScrapedProgress {
 
         guard totalHours > 0 || todayMinutes > 0 || streakDays > 0 else { return nil }
 
+        // Level data (optional — present in some API shapes)
+        var currentLevel: String? = nil
+        var nextLevelHours: Double? = nil
+        if let l = json["currentLevel"] as? String   { currentLevel = l }
+        if let l = json["level"]        as? String   { currentLevel = l }
+        if let h = json["nextLevelHours"] as? Double { nextLevelHours = h }
+        if let h = json["levelEnd"]       as? Double { nextLevelHours = h }
+        if let level = json["level"] as? [String: Any] {
+            if let name = level["name"] as? String   { currentLevel = name }
+            if let end  = level["endHours"] as? Double { nextLevelHours = end }
+        }
+
         let progress = dailyGoalMinutes > 0
             ? min(Double(todayMinutes) / Double(dailyGoalMinutes), 1.0) : 0
         return ScrapedProgress(
@@ -110,7 +135,9 @@ struct ScrapedProgress {
             todayMinutes: todayMinutes,
             streakDays: streakDays,
             dailyGoalMinutes: dailyGoalMinutes,
-            dailyGoalProgress: progress
+            dailyGoalProgress: progress,
+            currentLevel: currentLevel,
+            nextLevelHours: nextLevelHours
         )
     }
 }

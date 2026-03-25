@@ -122,7 +122,6 @@ struct LoginPromptView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
             }
             Button {
                 showWebView = true
@@ -132,9 +131,11 @@ struct LoginPromptView: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
-            .padding(.horizontal, 32)
             Spacer()
         }
+        .padding(.horizontal, 32)
+        .frame(maxWidth: 480)
+        .frame(maxWidth: .infinity)
         .navigationTitle("DS Progress Widget")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -145,96 +146,31 @@ struct LoginPromptView: View {
 struct DashboardView: View {
     let store: ProgressStore
     @Binding var showWebView: Bool
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     private var data: ProgressData { store.data }
+    private let blue = Color(red: 0.29, green: 0.50, blue: 0.96)
+    private let gold = Color(red: 1.0,  green: 0.85, blue: 0.2)
+    private var ringColor: Color { data.totalTodayProgress >= 1 ? gold : blue }
+    private var remainingMinutes: Int { max(data.dailyGoalMinutes - data.totalTodayMinutes, 0) }
 
-    // DS brand colors shared with widget
-    private let coral = Color(red: 0.91, green: 0.38, blue: 0.28)
-    private let blue  = Color(red: 0.29, green: 0.50, blue: 0.96)
-    private let gold  = Color(red: 1.0,  green: 0.85, blue: 0.2)
-
-    private var ringColor: Color {
-        data.totalTodayProgress >= 1 ? gold : blue
-    }
-
-    private var remainingMinutes: Int {
-        max(data.dailyGoalMinutes - data.totalTodayMinutes, 0)
-    }
-
-    // Confetti: stored as Double so @AppStorage can persist it
-    @AppStorage("confettiShownDate") private var confettiShownDateInterval: Double = 0
     @State private var showConfetti = false
 
-    private func triggerConfettiIfNeeded() {
-        guard data.totalTodayProgress >= 1 else { return }
-        let lastShown = Date(timeIntervalSince1970: confettiShownDateInterval)
-        guard !Calendar.current.isDateInToday(lastShown) else { return }
-        confettiShownDateInterval = Date().timeIntervalSince1970
-        // Haptic feedback
+    private func triggerGoalReached() {
         let haptic = UINotificationFeedbackGenerator()
         haptic.notificationOccurred(.success)
         showConfetti = true
-        // Hide only after all particles have fallen off screen (max delay 2.0 + max fall 3.0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5.5) {
-            showConfetti = false
-        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.5) { showConfetti = false }
     }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 28) {
-
-                // ── Progress ring (hero) ──────────────────────────────
-                DailyGoalCard(data: data)
-
-                // ── Stats grid ────────────────────────────────────────
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    AppStatCard(
-                        icon: "clock.fill", color: .blue,
-                        value: String(format: "%.0f", data.totalHours), unit: "hrs total"
-                    )
-                    AppStatCard(
-                        icon: "flame.fill", color: .orange,
-                        value: "\(data.streakDays)", unit: "wks streak"
-                    )
-                    AppStatCard(
-                        icon: "timer", color: ringColor,
-                        value: remainingMinutes == 0 ? "Done!" : "\(remainingMinutes)",
-                        unit: remainingMinutes == 0 ? "" : "min left"
-                    )
-                    AppStatCard(
-                        icon: "target", color: .purple,
-                        value: "\(data.dailyGoalMinutes)", unit: "min goal"
-                    )
+            Group {
+                if sizeClass == .regular {
+                    iPadLayout
+                } else {
+                    iPhoneLayout
                 }
-                .padding(.horizontal)
-
-                // ── Action buttons ────────────────────────────────────
-                VStack(spacing: 12) {
-                    Button {
-                        showWebView = true
-                    } label: {
-                        Label("Add Hours", systemImage: "play.circle.fill")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-
-                    Button {
-                        store.backgroundSync()
-                    } label: {
-                        Label(store.isSyncing ? "Syncing…" : "Sync Now", systemImage: "arrow.clockwise")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.large)
-                    .disabled(store.isSyncing)
-                }
-                .padding(.horizontal)
-
-                Text("Updated \(data.lastUpdated.formatted(.relative(presentation: .named)))")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
             }
             .padding(.vertical, 24)
         }
@@ -242,13 +178,91 @@ struct DashboardView: View {
         .navigationBarTitleDisplayMode(.inline)
         .overlay(alignment: .top) {
             if showConfetti {
-                ConfettiView()
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
+                ConfettiView().ignoresSafeArea().allowsHitTesting(false)
             }
         }
-        .onAppear { triggerConfettiIfNeeded() }
-        .onChange(of: data.totalTodayProgress) { triggerConfettiIfNeeded() }
+        .onChange(of: data.totalTodayProgress) { oldValue, newValue in
+            // Only fire when crossing the goal threshold, not on app open or incremental additions above 100%
+            if oldValue < 1.0, newValue >= 1.0 {
+                triggerGoalReached()
+            }
+        }
+    }
+
+    // MARK: iPad — ring left, stats + actions right
+    private var iPadLayout: some View {
+        HStack(alignment: .top, spacing: 48) {
+            DailyGoalCard(data: data, ringSize: 280, lineWidth: 22)
+                .frame(maxWidth: 340)
+
+            VStack(spacing: 20) {
+                statsGrid
+                actionButtons
+                timestampLabel
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.horizontal, 48)
+        .frame(maxWidth: 1000)
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: iPhone — stacked
+    private var iPhoneLayout: some View {
+        VStack(spacing: 28) {
+            DailyGoalCard(data: data)
+            statsGrid.padding(.horizontal)
+            actionButtons.padding(.horizontal)
+            timestampLabel
+        }
+    }
+
+    // MARK: Shared subviews
+    private var statsGrid: some View {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+            AppStatCard(icon: "clock.fill",  color: .blue,
+                        value: String(format: "%.0f", data.totalHours), unit: "hrs total")
+            AppStatCard(icon: "flame.fill",  color: .orange,
+                        value: "\(data.streakDays)", unit: "wks streak")
+            AppStatCard(icon: "timer",       color: ringColor,
+                        value: remainingMinutes == 0 ? "Done!" : "\(remainingMinutes)",
+                        unit:  remainingMinutes == 0 ? "" : "min left")
+            AppStatCard(icon: "target",      color: .purple,
+                        value: "\(data.dailyGoalMinutes)", unit: "min goal")
+            if let hrs = data.hoursToNextLevel {
+                AppStatCard(
+                    icon: "arrow.up.circle.fill", color: .green,
+                    value: String(format: "%.0f", hrs),
+                    unit: "hrs to next level",
+                    subtitle: data.currentLevel
+                )
+            }
+        }
+    }
+
+    private var actionButtons: some View {
+        VStack(spacing: 12) {
+            Button { showWebView = true } label: {
+                Label("Add Hours", systemImage: "play.circle.fill")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+
+            Button { store.backgroundSync() } label: {
+                Label(store.isSyncing ? "Syncing…" : "Sync Now", systemImage: "arrow.clockwise")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .disabled(store.isSyncing)
+        }
+    }
+
+    private var timestampLabel: some View {
+        Text("Updated \(data.lastUpdated.formatted(.relative(presentation: .named)))")
+            .font(.caption)
+            .foregroundStyle(.tertiary)
     }
 }
 
@@ -266,8 +280,8 @@ private let dsGradientComplete: [Color] = [
 
 struct DailyGoalCard: View {
     let data: ProgressData
-    private let ringSize: CGFloat = 210
-    private let lineWidth: CGFloat = 18
+    var ringSize: CGFloat = 210
+    var lineWidth: CGFloat = 18
 
     private var gradientColors: [Color] {
         data.totalTodayProgress >= 1 ? dsGradientComplete : dsGradientCorners
@@ -342,6 +356,7 @@ struct AppStatCard: View {
     let color: Color
     let value: String
     let unit: String
+    var subtitle: String? = nil
 
     var body: some View {
         HStack(spacing: 12) {
@@ -359,6 +374,11 @@ struct AppStatCard: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+                }
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
                 }
             }
             Spacer()

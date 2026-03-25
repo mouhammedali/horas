@@ -12,5 +12,6 @@ import SwiftUI
 struct DreamingWidgetBundle: WidgetBundle {
     var body: some Widget {
         DreamingWidget()
+        DreamingLockScreenWidget()
     }
 }

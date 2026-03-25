@@ -564,7 +564,83 @@ struct StatCard: View {
     }
 }
 
-// MARK: - Widget Declaration
+// MARK: - Lock Screen Widget Views
+
+struct LockScreenCircularView: View {
+    let entry: ProgressEntry
+
+    var body: some View {
+        let data = entry.data
+        let progress = Float(data.totalTodayProgress)
+
+        Gauge(value: progress, in: 0...1) {
+            Text("DS")
+                .font(.system(size: 9, weight: .bold))
+                .widgetAccentable()
+        } currentValueLabel: {
+            if data.isLoggedIn {
+                Text("\(data.totalTodayMinutes)")
+                    .font(.system(.title3, design: .rounded, weight: .bold))
+                    .widgetAccentable()
+            } else {
+                Image(systemName: "person.crop.circle.badge.exclamationmark")
+                    .font(.caption)
+            }
+        }
+        .gaugeStyle(.accessoryCircular)
+        .tint(progress >= 1 ? Color(red: 1.0, green: 0.85, blue: 0.2) : Color(red: 0.29, green: 0.50, blue: 0.96))
+        .containerBackground(for: .widget) { Color.clear }
+        .widgetURL(URL(string: "dswidget://addhours"))
+    }
+}
+
+struct LockScreenRectangularView: View {
+    let entry: ProgressEntry
+
+    var body: some View {
+        let data = entry.data
+
+        if !data.isLoggedIn {
+            Label("Tap to connect", systemImage: "person.crop.circle.badge.exclamationmark")
+                .font(.caption)
+                .widgetAccentable()
+                .containerBackground(for: .widget) { Color.clear }
+                .widgetURL(URL(string: "dswidget://login"))
+        } else {
+            let progress = data.totalTodayProgress
+            let pct = Int(progress * 100)
+
+            HStack(spacing: 10) {
+                // Mini gauge
+                Gauge(value: Float(progress), in: 0...1) {
+                    EmptyView()
+                } currentValueLabel: {
+                    Text("\(pct)%")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                }
+                .gaugeStyle(.accessoryCircular)
+                .tint(progress >= 1
+                    ? Color(red: 1.0, green: 0.85, blue: 0.2)
+                    : Color(red: 0.29, green: 0.50, blue: 0.96))
+                .frame(width: 44, height: 44)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(progress >= 1 ? "Goal reached!" : "\(data.totalTodayMinutes) / \(data.dailyGoalMinutes) min")
+                        .font(.system(.caption, design: .rounded, weight: .semibold))
+                        .widgetAccentable()
+                    Text("\(data.streakDays) wk streak · \(Int(data.totalHours)) hrs total")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer(minLength: 0)
+            }
+            .containerBackground(for: .widget) { Color.clear }
+            .widgetURL(URL(string: "dswidget://addhours"))
+        }
+    }
+}
+
+// MARK: - Widget Declarations
 
 struct DreamingWidget: Widget {
     let kind = "DreamingWidget"
@@ -579,7 +655,56 @@ struct DreamingWidget: Widget {
     }
 }
 
+struct LockScreenEntryView: View {
+    let entry: ProgressEntry
+    @Environment(\.widgetFamily) private var family
+
+    var body: some View {
+        switch family {
+        case .accessoryRectangular:
+            LockScreenRectangularView(entry: entry)
+        default:
+            LockScreenCircularView(entry: entry)
+        }
+    }
+}
+
+struct DreamingLockScreenWidget: Widget {
+    let kind = "DreamingLockScreenWidget"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: kind, provider: ProgressTimelineProvider()) { entry in
+            LockScreenEntryView(entry: entry)
+        }
+        .configurationDisplayName("DS Progress")
+        .description("Progress ring and stats on your lock screen.")
+        .supportedFamilies([.accessoryCircular, .accessoryRectangular])
+    }
+}
+
 // MARK: - Previews
+
+#Preview(as: .accessoryCircular) {
+    DreamingLockScreenWidget()
+} timeline: {
+    ProgressEntry(date: Date(), data: ProgressData(
+        totalHours: 505, todayMinutes: 68, streakDays: 75,
+        dailyGoalMinutes: 120, dailyGoalProgress: 0.57,
+        outsideMinutesToday: 0, lastUpdated: Date(), isLoggedIn: true
+    ))
+}
+
+#Preview(as: .accessoryRectangular) {
+    DreamingLockScreenWidget()
+} timeline: {
+    ProgressEntry(date: Date(), data: ProgressData(
+        totalHours: 505, todayMinutes: 68, streakDays: 75,
+        dailyGoalMinutes: 120, dailyGoalProgress: 0.57,
+        outsideMinutesToday: 0, lastUpdated: Date(), isLoggedIn: true
+    ))
+}
+
+// Home screen previews
 
 #Preview(as: .systemSmall) {
     DreamingWidget()
