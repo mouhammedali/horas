@@ -57,6 +57,7 @@ final class ProgressStore {
         if let l = scraped.currentLevel   { data.currentLevel   = l }
         if let h = scraped.nextLevelHours  { data.nextLevelHours  = h }
         if let m = scraped.hoursThisMonth  { data.hoursThisMonth  = m }
+        if !scraped.recentEntries.isEmpty  { data.recentEntries  = scraped.recentEntries }
         data.lastUpdated = Date()
         data.isLoggedIn = true
         isSyncing = false
@@ -110,6 +111,7 @@ final class BackgroundScraper: NSObject, WKScriptMessageHandler, WKNavigationDel
     private var webView: WKWebView?
     private var completion: ((ScrapedProgress?) -> Void)?
     private var done = false
+    private var partialResult: ScrapedProgress?
 
     func scrape(completion: @escaping (ScrapedProgress?) -> Void) {
         self.completion = completion
@@ -119,6 +121,7 @@ final class BackgroundScraper: NSObject, WKScriptMessageHandler, WKNavigationDel
 
         let controller = WKUserContentController()
         controller.add(self, name: "progressData")
+        controller.add(self, name: "recentEntries")
 
         let interceptor = WKUserScript(
             source: WebViewCoordinator.fetchInterceptorJS,
@@ -144,42 +147,62 @@ final class BackgroundScraper: NSObject, WKScriptMessageHandler, WKNavigationDel
 
         wv.load(URLRequest(url: URL(string: "https://app.dreaming.com/spanish/progress")!))
 
-        // Timeout safety net — give up after 45 s
+        // Timeout safety net — give up after 45 s (delivers partial result if entries never arrive)
         DispatchQueue.main.asyncAfter(deadline: .now() + 45) { [weak self] in
-            self?.finish(nil)
+            guard let self else { return }
+            self.finish(self.partialResult)
         }
     }
 
-    // JS → Swift: received scraped progress data
+    // JS → Swift message handler
     func userContentController(
         _ controller: WKUserContentController,
         didReceive message: WKScriptMessage
     ) {
-        guard !done, message.name == "progressData",
-              let body = message.body as? [String: Any] else { return }
+        guard !done else { return }
 
-        let asInt: (Any?) -> Int = { v in
-            (v as? Int) ?? (v as? Double).map { Int($0) } ?? 0
+        if message.name == "progressData", let body = message.body as? [String: Any] {
+            let asInt: (Any?) -> Int = { v in
+                (v as? Int) ?? (v as? Double).map { Int($0) } ?? 0
+            }
+            partialResult = ScrapedProgress(
+                totalHours: body["totalHours"] as? Double ?? 0,
+                todayMinutes: asInt(body["todayMinutes"]),
+                streakDays: asInt(body["streakDays"]),
+                dailyGoalMinutes: max(asInt(body["dailyGoalMinutes"]), 1),
+                dailyGoalProgress: body["dailyGoalProgress"] as? Double ?? 0,
+                currentLevel: body["currentLevel"] as? String,
+                nextLevelHours: body["nextLevelHours"] as? Double,
+                hoursThisMonth: body["hoursThisMonth"] as? Double
+            )
+            // Phase 2: navigate to time-outside page
+            webView?.load(URLRequest(url: URL(string: "https://app.dreaming.com/spanish/progress/time-outside")!))
         }
-        let result = ScrapedProgress(
-            totalHours: body["totalHours"] as? Double ?? 0,
-            todayMinutes: asInt(body["todayMinutes"]),
-            streakDays: asInt(body["streakDays"]),
-            dailyGoalMinutes: max(asInt(body["dailyGoalMinutes"]), 1),
-            dailyGoalProgress: body["dailyGoalProgress"] as? Double ?? 0,
-            currentLevel: body["currentLevel"] as? String,
-            nextLevelHours: body["nextLevelHours"] as? Double,
-            hoursThisMonth: body["hoursThisMonth"] as? Double
-        )
-        finish(result)
+
+        if message.name == "recentEntries", let arr = message.body as? [[String: Any]] {
+            let entries: [RecentEntry] = arr.compactMap { dict in
+                guard let duration = dict["duration"] as? String,
+                      let date = dict["date"] as? String else { return nil }
+                let title = dict["title"] as? String
+                if let t = title, t.localizedCaseInsensitiveContains("input time prior") { return nil }
+                return RecentEntry(duration: duration, title: title, date: date)
+            }
+            partialResult?.recentEntries = entries
+            finish(partialResult)
+        }
     }
 
-    // Inject DOM scraper once the progress page has loaded
+    // Inject DOM scrapers once pages have loaded
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         let url = webView.url?.absoluteString ?? ""
-        guard url.contains("/spanish/progress") else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak webView] in
-            webView?.evaluateJavaScript(WebViewCoordinator.domScraperJS) { _, _ in }
+        if url.contains("/time-outside") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak webView] in
+                webView?.evaluateJavaScript(WebViewCoordinator.timeOutsideScraperJS) { _, _ in }
+            }
+        } else if url.contains("/spanish/progress") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak webView] in
+                webView?.evaluateJavaScript(WebViewCoordinator.domScraperJS) { _, _ in }
+            }
         }
     }
 

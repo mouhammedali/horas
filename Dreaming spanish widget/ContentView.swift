@@ -176,6 +176,12 @@ struct DashboardView: View {
     private let gold = Color(red: 1.0,  green: 0.85, blue: 0.2)
     private var ringColor: Color { data.totalTodayProgress >= 1 ? gold : blue }
     private var remainingMinutes: Int { max(data.dailyGoalMinutes - data.totalTodayMinutes, 0) }
+    private var filteredEntries: [RecentEntry] {
+        Array(data.recentEntries.filter {
+            guard let t = $0.title else { return true }
+            return !t.localizedCaseInsensitiveContains("input time prior")
+        }.prefix(5))
+    }
 
     @State private var showConfetti = false
 
@@ -187,15 +193,29 @@ struct DashboardView: View {
     }
 
     var body: some View {
-        ScrollView {
-            Group {
-                if sizeClass == .regular {
-                    iPadLayout
-                } else {
-                    iPhoneLayout
+        VStack(spacing: 0) {
+            ScrollView {
+                Group {
+                    if sizeClass == .regular {
+                        iPadLayout
+                    } else {
+                        iPhoneLayout
+                    }
                 }
+                .padding(.vertical, 24)
             }
-            .padding(.vertical, 24)
+
+            // Pinned bottom bar — always visible
+            VStack(spacing: 0) {
+                Divider()
+                actionButtons
+                    .padding(.horizontal)
+                    .padding(.top, 12)
+                    .padding(.bottom, 8)
+                timestampLabel
+                    .padding(.bottom, 12)
+            }
+            .background(.bar)
         }
         .navigationTitle("DS Progress")
         .navigationBarTitleDisplayMode(.inline)
@@ -220,7 +240,7 @@ struct DashboardView: View {
 
             VStack(spacing: 20) {
                 statsGrid
-                actionButtons
+                if !filteredEntries.isEmpty { recentSessionsSection }
                 timestampLabel
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -235,8 +255,7 @@ struct DashboardView: View {
         VStack(spacing: 28) {
             DailyGoalCard(data: data)
             statsGrid.padding(.horizontal)
-            actionButtons.padding(.horizontal)
-            timestampLabel
+            if !filteredEntries.isEmpty { recentSessionsSection }
         }
     }
 
@@ -276,6 +295,66 @@ struct DashboardView: View {
             .buttonStyle(.bordered)
             .controlSize(.large)
             .disabled(store.isSyncing)
+        }
+    }
+
+    private var recentSessionsSection: some View {
+        let entries = filteredEntries
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(ringColor)
+                Text("Recent Sessions")
+                    .font(.headline)
+            }
+            .padding(.horizontal)
+
+            VStack(spacing: 0) {
+                ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
+                    HStack(spacing: 12) {
+                        // Index bubble
+                        Text("\(index + 1)")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.secondary)
+                            .frame(width: 20, height: 20)
+                            .background(.quaternary, in: Circle())
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            if let title = entry.title {
+                                Text(title)
+                                    .font(.subheadline.weight(.medium))
+                                    .lineLimit(1)
+                            } else {
+                                Text("Manual entry")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Text(entry.date)
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+
+                        Spacer()
+
+                        Text(entry.duration)
+                            .font(.system(.subheadline, design: .rounded, weight: .bold))
+                            .foregroundStyle(ringColor)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(ringColor.opacity(0.12), in: Capsule())
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 11)
+
+                    if entry.id != entries.last?.id {
+                        Divider()
+                            .padding(.leading, 52)
+                    }
+                }
+            }
+            .background(.quaternary, in: RoundedRectangle(cornerRadius: 16))
+            .padding(.horizontal)
         }
     }
 

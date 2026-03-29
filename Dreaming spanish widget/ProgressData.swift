@@ -21,6 +21,13 @@ enum AppGroupKeys {
     static let openAddHoursOnLaunch = "openAddHoursOnLaunch"
 }
 
+struct RecentEntry: Codable, Identifiable {
+    var id = UUID()
+    var duration: String  // e.g. "37m" or "1h 24m"
+    var title: String?    // nil for manual/unlabelled entries
+    var date: String      // e.g. "2026-03-28"
+}
+
 struct ProgressData: Codable {
     // Scraped from Dreaming Spanish
     var totalHours: Double
@@ -38,6 +45,9 @@ struct ProgressData: Codable {
 
     // Manually logged outside DS
     var outsideMinutesToday: Int
+
+    // Recent sessions from /time-outside
+    var recentEntries: [RecentEntry]
 
     // Metadata
     var lastUpdated: Date
@@ -69,6 +79,7 @@ struct ProgressData: Codable {
             nextLevelHours: nil,
             hoursThisMonth: nil,
             outsideMinutesToday: 0,
+            recentEntries: [],
             lastUpdated: Date(),
             isLoggedIn: false
         )
@@ -85,6 +96,7 @@ struct ScrapedProgress {
     var currentLevel: String? = nil
     var nextLevelHours: Double? = nil
     var hoursThisMonth: Double? = nil
+    var recentEntries: [RecentEntry] = []
 
     // Parse a DS API JSON response (same logic as LoginWebView.parseAPIResponse
     // but shared so the widget extension can use it without WKWebView)

@@ -16,6 +16,7 @@ import WebKit
 final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
 
     var onProgressReceived: ((ScrapedProgress) -> Void)?
+    var onEntriesReceived: (([RecentEntry]) -> Void)?
     var onLoginDetected: (() -> Void)?
 
     // Called when JS posts to window.webkit.messageHandlers.progressData
@@ -40,6 +41,18 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
                 hoursThisMonth: body["hoursThisMonth"] as? Double
             )
             DispatchQueue.main.async { self.onProgressReceived?(scraped) }
+        }
+
+        if message.name == "recentEntries" {
+            guard let arr = message.body as? [[String: Any]] else { return }
+            let entries: [RecentEntry] = arr.compactMap { dict in
+                guard let duration = dict["duration"] as? String,
+                      let date = dict["date"] as? String else { return nil }
+                let title = dict["title"] as? String
+                if let t = title, t.localizedCaseInsensitiveContains("input time prior") { return nil }
+                return RecentEntry(duration: duration, title: title, date: date)
+            }
+            DispatchQueue.main.async { self.onEntriesReceived?(entries) }
         }
 
         if message.name == "apiData" {
@@ -108,8 +121,12 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         let url = webView.url?.absoluteString ?? ""
-        if url.contains("app.dreaming.com/spanish/progress") ||
-           url.contains("dreaming.com/spanish/progress") {
+        if url.contains("/spanish/progress/time-outside") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak webView] in
+                webView?.evaluateJavaScript(Self.timeOutsideScraperJS) { _, _ in }
+            }
+        } else if url.contains("app.dreaming.com/spanish/progress") ||
+                  url.contains("dreaming.com/spanish/progress") {
             onLoginDetected?()
             // Wait for React to hydrate before injecting the DOM scraper
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak webView] in
@@ -187,6 +204,32 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
             });
             return _origSend.apply(this, arguments);
         };
+    })();
+    """
+
+    // Injected on the /time-outside page — scrapes recent session entries.
+    static let timeOutsideScraperJS = """
+    (function() {
+        function textOf(el) { return el ? (el.innerText||el.textContent||'').trim() : ''; }
+        var entries = [];
+        var dds = document.querySelectorAll('dd');
+        var i = 0;
+        while (i < dds.length && entries.length < 5) {
+            var t = textOf(dds[i]);
+            if (/^\\d+[mh]|^\\d+h\\s+\\d+m/.test(t)) {
+                var duration = t, title = null, date = null;
+                i++;
+                if (i < dds.length && dds[i].className.includes('ellipsis')) {
+                    title = textOf(dds[i]); i++;
+                }
+                if (i < dds.length && /^\\d{4}-\\d{2}-\\d{2}$/.test(textOf(dds[i]))) {
+                    date = textOf(dds[i]); i++;
+                }
+                var skip = title && /input time prior/i.test(title);
+                if (duration && date && !skip) entries.push({duration: duration, title: title, date: date});
+            } else { i++; }
+        }
+        window.webkit.messageHandlers.recentEntries.postMessage(entries);
     })();
     """
 
@@ -284,6 +327,9 @@ struct LoginWebView: UIViewRepresentable {
                     .set(header, forKey: AppGroupKeys.cookieHeader)
             }
         }
+        coord.onEntriesReceived = { [store] entries in
+            if !entries.isEmpty { store.data.recentEntries = entries }
+        }
         coord.onLoginDetected = { [self] in
             // Keep sheet open so user can see the page loaded;
             // they can dismiss manually once data is synced
@@ -298,6 +344,7 @@ struct LoginWebView: UIViewRepresentable {
         // Register message handlers
         contentController.add(context.coordinator, name: "progressData")
         contentController.add(context.coordinator, name: "apiData")
+        contentController.add(context.coordinator, name: "recentEntries")
 
         // Inject fetch interceptor at document start (runs before any page JS)
         let interceptScript = WKUserScript(

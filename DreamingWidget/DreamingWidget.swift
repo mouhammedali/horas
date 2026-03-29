@@ -731,7 +731,7 @@ struct DreamingLockScreenWidget: Widget {
     ProgressEntry(date: Date(), data: ProgressData(
         totalHours: 505, todayMinutes: 68, streakDays: 75,
         dailyGoalMinutes: 120, dailyGoalProgress: 0.57,
-        outsideMinutesToday: 0, lastUpdated: Date(), isLoggedIn: true
+        outsideMinutesToday: 0, recentEntries: [], lastUpdated: Date(), isLoggedIn: true
     ))
 }
 
@@ -741,7 +741,7 @@ struct DreamingLockScreenWidget: Widget {
     ProgressEntry(date: Date(), data: ProgressData(
         totalHours: 505, todayMinutes: 68, streakDays: 75,
         dailyGoalMinutes: 120, dailyGoalProgress: 0.57,
-        outsideMinutesToday: 0, lastUpdated: Date(), isLoggedIn: true
+        outsideMinutesToday: 0, recentEntries: [], lastUpdated: Date(), isLoggedIn: true
     ))
 }
 
@@ -753,7 +753,7 @@ struct DreamingLockScreenWidget: Widget {
     ProgressEntry(date: Date(), data: ProgressData(
         totalHours: 505, todayMinutes: 68, streakDays: 75,
         dailyGoalMinutes: 120, dailyGoalProgress: 0.57,
-        outsideMinutesToday: 15, lastUpdated: Date(), isLoggedIn: true
+        outsideMinutesToday: 15, recentEntries: [], lastUpdated: Date(), isLoggedIn: true
     ))
 }
 
@@ -763,7 +763,7 @@ struct DreamingLockScreenWidget: Widget {
     ProgressEntry(date: Date(), data: ProgressData(
         totalHours: 505, todayMinutes: 68, streakDays: 75,
         dailyGoalMinutes: 120, dailyGoalProgress: 0.57,
-        outsideMinutesToday: 15, lastUpdated: Date(), isLoggedIn: true
+        outsideMinutesToday: 15, recentEntries: [], lastUpdated: Date(), isLoggedIn: true
     ))
 }
 
@@ -773,6 +773,6 @@ struct DreamingLockScreenWidget: Widget {
     ProgressEntry(date: Date(), data: ProgressData(
         totalHours: 505, todayMinutes: 68, streakDays: 75,
         dailyGoalMinutes: 120, dailyGoalProgress: 0.57,
-        outsideMinutesToday: 15, lastUpdated: Date(), isLoggedIn: true
+        outsideMinutesToday: 15, recentEntries: [], lastUpdated: Date(), isLoggedIn: true
     ))
 }
