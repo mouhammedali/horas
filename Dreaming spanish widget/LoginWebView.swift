@@ -36,7 +36,8 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
                 dailyGoalMinutes: max(asInt(body["dailyGoalMinutes"]), 1),
                 dailyGoalProgress: body["dailyGoalProgress"] as? Double ?? 0,
                 currentLevel: body["currentLevel"] as? String,
-                nextLevelHours: body["nextLevelHours"] as? Double
+                nextLevelHours: body["nextLevelHours"] as? Double,
+                hoursThisMonth: body["hoursThisMonth"] as? Double
             )
             DispatchQueue.main.async { self.onProgressReceived?(scraped) }
         }
@@ -219,9 +220,9 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
         var currentLevel = '';
         var nextLevelHours = 0;
         var infoLabels = document.querySelectorAll('.ds-overall-progression-card__info-label');
-        if (infoLabels.length >= 1) {
-            currentLevel = textOf(infoLabels[0]);
-        }
+        // Level name is in a separate heading element, not infoLabels[0]
+        var levelHeading = document.querySelector('.ds-overall-progression-card__level-name, [class*="level-name"], [class*="level_name"]');
+        if (levelHeading) { currentLevel = textOf(levelHeading); }
         if (infoLabels.length >= 2) {
             var t = textOf(infoLabels[1]);
             var n = parseFloat((t.replace(/,/g, '').match(/[\\d.]+/) || ['0'])[0]);
@@ -231,6 +232,14 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
             var t = textOf(infoLabels[3]);
             var n = parseFloat((t.replace(/,/g, '').match(/[\\d.]+/) || ['0'])[0]);
             if (n > 0) nextLevelHours = n;
+        }
+
+        // --- Hours this month ---
+        var hoursThisMonth = 0;
+        var monthEl = document.querySelector('[data-testid="hours-this-month-value"]');
+        if (monthEl) {
+            var mn = parseFloat((textOf(monthEl).replace(/,/g, '').match(/[\\d.]+/) || ['0'])[0]);
+            if (mn > 0) hoursThisMonth = mn;
         }
 
         // --- Streak (weeks) ---
@@ -250,7 +259,8 @@ final class WebViewCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDe
             dailyGoalMinutes: dailyGoalMinutes,
             dailyGoalProgress: dailyGoalProgress,
             currentLevel: currentLevel,
-            nextLevelHours: nextLevelHours
+            nextLevelHours: nextLevelHours,
+            hoursThisMonth: hoursThisMonth
         });
     })();
     """

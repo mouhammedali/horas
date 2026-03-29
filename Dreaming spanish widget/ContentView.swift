@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var store = ProgressStore()
     @State private var showWebView = false
+    @State private var backgroundAfterSync = false
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -24,21 +25,36 @@ struct ContentView: View {
         .onAppear {
             triggerSyncIfRequested()
             autoSyncIfStale()
+            checkAddHoursFlag()
         }
         // Foreground transition: app was already running in background
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 triggerSyncIfRequested()
                 autoSyncIfStale()
+                checkAddHoursFlag()
             }
+        }
+        // Add Hours action button / shortcut — works even when app is already in foreground
+        .onReceive(NotificationCenter.default.publisher(for: .openAddHours)) { _ in
+            showWebView = true
+        }
+        // When sync finishes and we were opened via the widget refresh button, go to background
+        .onChange(of: store.isSyncing) { _, isSyncing in
+            guard !isSyncing, backgroundAfterSync else { return }
+            backgroundAfterSync = false
+            UIApplication.shared.perform(NSSelectorFromString("suspend"))
         }
         // Handle widget deep links
         .onOpenURL { url in
             guard url.scheme == "dswidget" else { return }
             if url.host == "refresh" {
-                // Trigger sync then return to home screen automatically
                 store.backgroundSync()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                backgroundAfterSync = true
+                // Safety timeout — suspend even if sync never completes
+                DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [self] in
+                    guard backgroundAfterSync else { return }
+                    backgroundAfterSync = false
                     UIApplication.shared.perform(NSSelectorFromString("suspend"))
                 }
             } else {
@@ -54,6 +70,13 @@ struct ContentView: View {
         }) {
             DSWebViewSheet(store: store, isPresented: $showWebView)
         }
+    }
+
+    private func checkAddHoursFlag() {
+        let defaults = UserDefaults(suiteName: ProgressStore.appGroupID)
+        guard defaults?.bool(forKey: AppGroupKeys.openAddHoursOnLaunch) == true else { return }
+        defaults?.removeObject(forKey: AppGroupKeys.openAddHoursOnLaunch)
+        showWebView = true
     }
 
     private func autoSyncIfStale() {
@@ -224,17 +247,14 @@ struct DashboardView: View {
                         value: String(format: "%.0f", data.totalHours), unit: "hrs total")
             AppStatCard(icon: "flame.fill",  color: .orange,
                         value: "\(data.streakDays)", unit: "wks streak")
-            AppStatCard(icon: "timer",       color: ringColor,
-                        value: remainingMinutes == 0 ? "Done!" : "\(remainingMinutes)",
-                        unit:  remainingMinutes == 0 ? "" : "min left")
-            AppStatCard(icon: "target",      color: .purple,
-                        value: "\(data.dailyGoalMinutes)", unit: "min goal")
+            AppStatCard(icon: "calendar",    color: .cyan,
+                        value: data.hoursThisMonth.map { String(format: "%.0f", $0) } ?? "—",
+                        unit: "hrs this month")
             if let hrs = data.hoursToNextLevel {
                 AppStatCard(
                     icon: "arrow.up.circle.fill", color: .green,
                     value: String(format: "%.0f", hrs),
-                    unit: "hrs to next level",
-                    subtitle: data.currentLevel
+                    unit: "hrs to next level"
                 )
             }
         }
@@ -296,7 +316,7 @@ struct DailyGoalCard: View {
 
                 // Glow layer
                 Circle()
-                    .trim(from: 0, to: max(data.totalTodayProgress, 0.01))
+                    .trim(from: 0, to: data.totalTodayProgress)
                     .stroke(
                         LinearGradient(colors: gradientColors, startPoint: .leading, endPoint: .trailing),
                         style: StrokeStyle(lineWidth: lineWidth + 8, lineCap: .round)
@@ -304,10 +324,11 @@ struct DailyGoalCard: View {
                     .rotationEffect(.degrees(-90))
                     .blur(radius: 6)
                     .opacity(0.35)
+                    .animation(.spring(duration: 0.7), value: data.totalTodayProgress)
 
                 // Main arc
                 Circle()
-                    .trim(from: 0, to: max(data.totalTodayProgress, 0.01))
+                    .trim(from: 0, to: data.totalTodayProgress)
                     .stroke(
                         LinearGradient(colors: gradientColors, startPoint: .leading, endPoint: .trailing),
                         style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
@@ -364,21 +385,22 @@ struct AppStatCard: View {
                 .font(.title3)
                 .foregroundStyle(color)
                 .frame(width: 28)
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(alignment: .lastTextBaseline, spacing: 3) {
-                    Text(value)
-                        .font(.system(.title3, design: .rounded, weight: .bold))
-                        .contentTransition(.numericText())
-                    if !unit.isEmpty {
-                        Text(unit)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+            VStack(alignment: .leading, spacing: 1) {
+                if !unit.isEmpty {
+                    Text(unit)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
+                Text(value)
+                    .font(.system(.title3, design: .rounded, weight: .bold))
+                    .contentTransition(.numericText())
+                    .lineLimit(1)
                 if let subtitle {
                     Text(subtitle)
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
+                        .lineLimit(1)
                 }
             }
             Spacer()

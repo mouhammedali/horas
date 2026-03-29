@@ -570,25 +570,47 @@ struct LockScreenCircularView: View {
     let entry: ProgressEntry
 
     var body: some View {
-        let data = entry.data
-        let progress = Float(data.totalTodayProgress)
+        let data     = entry.data
+        let progress = min(data.totalTodayProgress, 1.0)
+        let isGoal   = data.totalTodayProgress >= 1
 
-        Gauge(value: progress, in: 0...1) {
-            Text("DS")
-                .font(.system(size: 9, weight: .bold))
+        ZStack {
+            // Track — dimmed full circle (like Fitness inactive ring)
+            Circle()
+                .stroke(.secondary.opacity(0.25), lineWidth: 8)
+
+            // Progress arc — closed ring starting at 12 o'clock, Fitness style
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(
+                    isGoal
+                        ? Color(red: 1.0, green: 0.85, blue: 0.2)
+                        : Color(red: 0.29, green: 0.50, blue: 0.96),
+                    style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                )
+                .rotationEffect(.degrees(-90))
                 .widgetAccentable()
-        } currentValueLabel: {
+
+            // Center label — minutes + unit, same layout as Fitness (e.g. "523 CAL")
             if data.isLoggedIn {
-                Text("\(data.totalTodayMinutes)")
-                    .font(.system(.title3, design: .rounded, weight: .bold))
-                    .widgetAccentable()
+                VStack(spacing: -1) {
+                    Text("🇪🇸")
+                        .font(.system(size: 8))
+                    Text("\(data.totalTodayMinutes)")
+                        .font(.system(.callout, design: .rounded, weight: .bold))
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(1)
+                        .widgetAccentable()
+                    Text("MIN")
+                        .font(.system(size: 7, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
             } else {
-                Image(systemName: "person.crop.circle.badge.exclamationmark")
-                    .font(.caption)
+                Image(systemName: "figure.walk")
+                    .font(.callout)
+                    .widgetAccentable()
             }
         }
-        .gaugeStyle(.accessoryCircular)
-        .tint(progress >= 1 ? Color(red: 1.0, green: 0.85, blue: 0.2) : Color(red: 0.29, green: 0.50, blue: 0.96))
         .containerBackground(for: .widget) { Color.clear }
         .widgetURL(URL(string: "dswidget://addhours"))
     }
@@ -598,39 +620,58 @@ struct LockScreenRectangularView: View {
     let entry: ProgressEntry
 
     var body: some View {
-        let data = entry.data
+        let data     = entry.data
+        let progress = min(data.totalTodayProgress, 1.0)
+        let isGoal   = data.totalTodayProgress >= 1
+        let tint     = isGoal
+            ? Color(red: 1.0, green: 0.85, blue: 0.2)
+            : Color(red: 0.29, green: 0.50, blue: 0.96)
 
         if !data.isLoggedIn {
-            Label("Tap to connect", systemImage: "person.crop.circle.badge.exclamationmark")
+            Label("Open app to connect", systemImage: "figure.walk")
                 .font(.caption)
                 .widgetAccentable()
                 .containerBackground(for: .widget) { Color.clear }
                 .widgetURL(URL(string: "dswidget://login"))
         } else {
-            let progress = data.totalTodayProgress
-            let pct = Int(progress * 100)
-
+            // Fitness rectangular style: small ring left, primary metric + secondary stats right
             HStack(spacing: 10) {
-                // Mini gauge
-                Gauge(value: Float(progress), in: 0...1) {
-                    EmptyView()
-                } currentValueLabel: {
-                    Text("\(pct)%")
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                // Closed ring — same style as circular widget, scaled down
+                ZStack {
+                    Circle()
+                        .stroke(.secondary.opacity(0.25), lineWidth: 5)
+                    Circle()
+                        .trim(from: 0, to: progress)
+                        .stroke(tint, style: StrokeStyle(lineWidth: 5, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                        .widgetAccentable()
+                    Text(isGoal ? "✓" : "\(Int(progress * 100))%")
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                        .widgetAccentable()
+                        .minimumScaleFactor(0.5)
                 }
-                .gaugeStyle(.accessoryCircular)
-                .tint(progress >= 1
-                    ? Color(red: 1.0, green: 0.85, blue: 0.2)
-                    : Color(red: 0.29, green: 0.50, blue: 0.96))
                 .frame(width: 44, height: 44)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(progress >= 1 ? "Goal reached!" : "\(data.totalTodayMinutes) / \(data.dailyGoalMinutes) min")
-                        .font(.system(.caption, design: .rounded, weight: .semibold))
-                        .widgetAccentable()
-                    Text("\(data.streakDays) wk streak · \(Int(data.totalHours)) hrs total")
-                        .font(.system(size: 11))
-                        .foregroundStyle(.secondary)
+                // Right: primary + secondary rows (Fitness layout)
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(alignment: .lastTextBaseline, spacing: 4) {
+                        Text("🇪🇸")
+                            .font(.system(size: 11))
+                        Text("\(data.totalTodayMinutes)")
+                            .font(.system(.callout, design: .rounded, weight: .bold))
+                            .widgetAccentable()
+                        Text("/ \(data.dailyGoalMinutes) MIN")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack(spacing: 8) {
+                        Label("\(data.streakDays)wk", systemImage: "flame.fill")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                        Label("\(Int(data.totalHours))h", systemImage: "clock.fill")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 Spacer(minLength: 0)
             }

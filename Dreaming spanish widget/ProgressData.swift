@@ -16,8 +16,9 @@ enum AppGroupKeys {
     static let syncRequested = "syncRequested"
     static let syncFailed    = "syncFailed"
     static let cookieHeader  = "dsCookieHeader"
-    static let apiURL        = "dsProgressAPIURL"
-    static let apiHeaders    = "dsProgressAPIHeaders"
+    static let apiURL               = "dsProgressAPIURL"
+    static let apiHeaders           = "dsProgressAPIHeaders"
+    static let openAddHoursOnLaunch = "openAddHoursOnLaunch"
 }
 
 struct ProgressData: Codable {
@@ -31,6 +32,9 @@ struct ProgressData: Codable {
     // Level progression (optional — nil if not yet scraped)
     var currentLevel: String?
     var nextLevelHours: Double?
+
+    // Monthly hours scraped directly from DS
+    var hoursThisMonth: Double?
 
     // Manually logged outside DS
     var outsideMinutesToday: Int
@@ -63,6 +67,7 @@ struct ProgressData: Codable {
             dailyGoalProgress: 0,
             currentLevel: nil,
             nextLevelHours: nil,
+            hoursThisMonth: nil,
             outsideMinutesToday: 0,
             lastUpdated: Date(),
             isLoggedIn: false
@@ -79,6 +84,7 @@ struct ScrapedProgress {
     var dailyGoalProgress: Double
     var currentLevel: String? = nil
     var nextLevelHours: Double? = nil
+    var hoursThisMonth: Double? = nil
 
     // Parse a DS API JSON response (same logic as LoginWebView.parseAPIResponse
     // but shared so the widget extension can use it without WKWebView)
