@@ -210,10 +210,7 @@ struct DashboardView: View {
                 Divider()
                 actionButtons
                     .padding(.horizontal)
-                    .padding(.top, 12)
-                    .padding(.bottom, 8)
-                timestampLabel
-                    .padding(.bottom, 12)
+                    .padding(.vertical, 12)
             }
             .background(.bar)
         }
@@ -241,7 +238,6 @@ struct DashboardView: View {
             VStack(spacing: 20) {
                 statsGrid
                 if !filteredEntries.isEmpty { recentSessionsSection }
-                timestampLabel
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -280,21 +276,26 @@ struct DashboardView: View {
     }
 
     private var actionButtons: some View {
-        VStack(spacing: 12) {
-            Button { showWebView = true } label: {
-                Label("Add Hours", systemImage: "play.circle.fill")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+        VStack(spacing: 6) {
+            HStack(spacing: 12) {
+                Button { showWebView = true } label: {
+                    Label("Add Hours", systemImage: "play.circle.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
 
-            Button { store.backgroundSync() } label: {
-                Label(store.isSyncing ? "Syncing…" : "Sync Now", systemImage: "arrow.clockwise")
-                    .frame(maxWidth: .infinity)
+                Button { store.backgroundSync() } label: {
+                    Label(store.isSyncing ? "Syncing…" : "Sync Now", systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .disabled(store.isSyncing)
             }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
-            .disabled(store.isSyncing)
+            Text(data.lastUpdated.formatted(.relative(presentation: .named)))
+                .font(.caption)
+                .foregroundStyle(.tertiary)
         }
     }
 
@@ -358,11 +359,6 @@ struct DashboardView: View {
         }
     }
 
-    private var timestampLabel: some View {
-        Text("Updated \(data.lastUpdated.formatted(.relative(presentation: .named)))")
-            .font(.caption)
-            .foregroundStyle(.tertiary)
-    }
 }
 
 // MARK: - Daily Goal Card
