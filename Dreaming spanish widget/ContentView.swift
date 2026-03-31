@@ -263,7 +263,7 @@ struct DashboardView: View {
             AppStatCard(icon: "flame.fill",  color: .orange,
                         value: "\(data.streakDays)", unit: "wks streak")
             AppStatCard(icon: "calendar",    color: .cyan,
-                        value: data.hoursThisMonth.map { String(format: "%.0f", $0) } ?? "—",
+                        value: data.hoursThisMonth.map { String(format: "%.1f", $0) } ?? "—",
                         unit: "hrs this month")
             if let hrs = data.hoursToNextLevel {
                 AppStatCard(
@@ -293,6 +293,8 @@ struct DashboardView: View {
                 .controlSize(.large)
                 .disabled(store.isSyncing)
             }
+            .frame(maxWidth: 500)
+
             Text(data.lastUpdated.formatted(.relative(presentation: .named)))
                 .font(.caption)
                 .foregroundStyle(.tertiary)
