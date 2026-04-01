@@ -260,17 +260,21 @@ struct DashboardView: View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
             AppStatCard(icon: "clock.fill",  color: .blue,
                         value: String(format: "%.0f", data.totalHours), unit: "hrs total")
+                .animation(.spring(duration: 0.5), value: data.totalHours)
             AppStatCard(icon: "flame.fill",  color: .orange,
                         value: "\(data.streakDays)", unit: "wks streak")
+                .animation(.spring(duration: 0.5), value: data.streakDays)
             AppStatCard(icon: "calendar",    color: .cyan,
                         value: data.hoursThisMonth.map { String(format: "%.1f", $0) } ?? "—",
                         unit: "hrs this month")
+                .animation(.spring(duration: 0.5), value: data.hoursThisMonth)
             if let hrs = data.hoursToNextLevel {
                 AppStatCard(
                     icon: "arrow.up.circle.fill", color: .green,
                     value: String(format: "%.0f", hrs),
                     unit: "hrs to next level"
                 )
+                .animation(.spring(duration: 0.5), value: hrs)
             }
         }
     }
@@ -358,6 +362,7 @@ struct DashboardView: View {
             }
             .background(.quaternary, in: RoundedRectangle(cornerRadius: 16))
             .padding(.horizontal)
+            .animation(.spring(duration: 0.4), value: entries.map(\.id))
         }
     }
 
