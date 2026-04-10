@@ -28,6 +28,8 @@ final class ProgressStore {
     init() {
         self.defaults = UserDefaults(suiteName: Self.appGroupID) ?? .standard
         load()
+        // Activate WatchConnectivity early so the session is ready before first save()
+        _ = WatchConnectivityBridge.shared
     }
 
     // MARK: - Persistence
@@ -44,6 +46,7 @@ final class ProgressStore {
         guard let encoded = try? JSONEncoder().encode(data) else { return }
         defaults.set(encoded, forKey: Self.dataKey)
         WidgetCenter.shared.reloadAllTimelines()
+        WatchConnectivityBridge.shared.sendToWatch(data)
     }
 
     // MARK: - Updates

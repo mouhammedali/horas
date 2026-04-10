@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		AA001A0C2F60B4AE00BE602F /* DreamingWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA001A002F60B4AE00BE602F /* DreamingWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		BB001A0D2F70000000BE602F /* DreamingWatchWidget.appex in Embed Watch Extensions */ = {isa = PBXBuildFile; fileRef = CC001A092F70000000BE602F /* DreamingWatchWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		EE001A042F70000000BE602F /* DreamingWatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = BB001A092F70000000BE602F /* DreamingWatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -17,6 +19,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = AA001A052F60B4AE00BE602F;
 			remoteInfo = DreamingWidget;
+		};
+		BB001A0C2F70000000BE602F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D39D18F72F60B4AE00BE602F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CC001A052F70000000BE602F;
+			remoteInfo = DreamingWatchWidget;
+		};
+		EE001A072F70000000BE602F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D39D18F72F60B4AE00BE602F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BB001A052F70000000BE602F;
+			remoteInfo = DreamingWatchApp;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -32,10 +48,34 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BB001A0A2F70000000BE602F /* Embed Watch Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				BB001A0D2F70000000BE602F /* DreamingWatchWidget.appex in Embed Watch Extensions */,
+			);
+			name = "Embed Watch Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EE001A052F70000000BE602F /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				EE001A042F70000000BE602F /* DreamingWatchApp.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		AA001A002F60B4AE00BE602F /* DreamingWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DreamingWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB001A092F70000000BE602F /* DreamingWatchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DreamingWatchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC001A092F70000000BE602F /* DreamingWatchWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DreamingWatchWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D39D18FF2F60B4AE00BE602F /* Dreaming spanish widget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Dreaming spanish widget.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -47,12 +87,40 @@
 			);
 			target = AA001A052F60B4AE00BE602F /* DreamingWidget */;
 		};
+		BB001A0F2F70000000BE602F /* Exceptions for "DreamingWatchApp" folder in "DreamingWatchWidget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				WatchProgressData.swift,
+			);
+			target = CC001A052F70000000BE602F /* DreamingWatchWidget */;
+		};
+		BB001A102F70000000BE602F /* Exceptions for "DreamingWatchApp" folder in "Dreaming spanish widget" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				WatchProgressData.swift,
+			);
+			target = D39D18FE2F60B4AE00BE602F /* Dreaming spanish widget */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AA001A012F60B4AE00BE602F /* DreamingWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = DreamingWidget;
+			sourceTree = "<group>";
+		};
+		BB001A012F70000000BE602F /* DreamingWatchApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				BB001A0F2F70000000BE602F /* Exceptions for "DreamingWatchApp" folder in "DreamingWatchWidget" target */,
+				BB001A102F70000000BE602F /* Exceptions for "DreamingWatchApp" folder in "Dreaming spanish widget" target */,
+			);
+			path = DreamingWatchApp;
+			sourceTree = "<group>";
+		};
+		CC001A012F70000000BE602F /* DreamingWatchWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DreamingWatchWidget;
 			sourceTree = "<group>";
 		};
 		D39D19012F60B4AE00BE602F /* Dreaming spanish widget */ = {
@@ -67,6 +135,20 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		AA001A032F60B4AE00BE602F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB001A032F70000000BE602F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CC001A032F70000000BE602F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -88,6 +170,8 @@
 			children = (
 				D39D19012F60B4AE00BE602F /* Dreaming spanish widget */,
 				AA001A012F60B4AE00BE602F /* DreamingWidget */,
+				BB001A012F70000000BE602F /* DreamingWatchApp */,
+				CC001A012F70000000BE602F /* DreamingWatchWidget */,
 				D39D19002F60B4AE00BE602F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -97,6 +181,8 @@
 			children = (
 				D39D18FF2F60B4AE00BE602F /* Dreaming spanish widget.app */,
 				AA001A002F60B4AE00BE602F /* DreamingWidget.appex */,
+				BB001A092F70000000BE602F /* DreamingWatchApp.app */,
+				CC001A092F70000000BE602F /* DreamingWatchWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -127,6 +213,53 @@
 			productReference = AA001A002F60B4AE00BE602F /* DreamingWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		BB001A052F70000000BE602F /* DreamingWatchApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB001A082F70000000BE602F /* Build configuration list for PBXNativeTarget "DreamingWatchApp" */;
+			buildPhases = (
+				BB001A022F70000000BE602F /* Sources */,
+				BB001A032F70000000BE602F /* Frameworks */,
+				BB001A042F70000000BE602F /* Resources */,
+				BB001A0A2F70000000BE602F /* Embed Watch Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB001A0B2F70000000BE602F /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BB001A012F70000000BE602F /* DreamingWatchApp */,
+			);
+			name = DreamingWatchApp;
+			packageProductDependencies = (
+			);
+			productName = DreamingWatchApp;
+			productReference = BB001A092F70000000BE602F /* DreamingWatchApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CC001A052F70000000BE602F /* DreamingWatchWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CC001A082F70000000BE602F /* Build configuration list for PBXNativeTarget "DreamingWatchWidget" */;
+			buildPhases = (
+				CC001A022F70000000BE602F /* Sources */,
+				CC001A032F70000000BE602F /* Frameworks */,
+				CC001A042F70000000BE602F /* Resources */,
+				CC001A0A2F70000000BE602F /* Inject NSExtension into Info.plist */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CC001A012F70000000BE602F /* DreamingWatchWidget */,
+			);
+			name = DreamingWatchWidget;
+			packageProductDependencies = (
+			);
+			productName = DreamingWatchWidget;
+			productReference = CC001A092F70000000BE602F /* DreamingWatchWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		D39D18FE2F60B4AE00BE602F /* Dreaming spanish widget */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D39D190A2F60B4AF00BE602F /* Build configuration list for PBXNativeTarget "Dreaming spanish widget" */;
@@ -135,11 +268,13 @@
 				D39D18FC2F60B4AE00BE602F /* Frameworks */,
 				D39D18FD2F60B4AE00BE602F /* Resources */,
 				AA001A0B2F60B4AE00BE602F /* Embed Foundation Extensions */,
+				EE001A052F70000000BE602F /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				AA001A0A2F60B4AE00BE602F /* PBXTargetDependency */,
+				EE001A062F70000000BE602F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D39D19012F60B4AE00BE602F /* Dreaming spanish widget */,
@@ -164,6 +299,12 @@
 					AA001A052F60B4AE00BE602F = {
 						CreatedOnToolsVersion = 26.0;
 					};
+					BB001A052F70000000BE602F = {
+						CreatedOnToolsVersion = 26.0;
+					};
+					CC001A052F70000000BE602F = {
+						CreatedOnToolsVersion = 26.0;
+					};
 					D39D18FE2F60B4AE00BE602F = {
 						CreatedOnToolsVersion = 26.0;
 					};
@@ -185,12 +326,28 @@
 			targets = (
 				D39D18FE2F60B4AE00BE602F /* Dreaming spanish widget */,
 				AA001A052F60B4AE00BE602F /* DreamingWidget */,
+				BB001A052F70000000BE602F /* DreamingWatchApp */,
+				CC001A052F70000000BE602F /* DreamingWatchWidget */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AA001A042F60B4AE00BE602F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB001A042F70000000BE602F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CC001A042F70000000BE602F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -225,10 +382,42 @@
 			shellPath = /bin/sh;
 			shellScript = "INFO_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\nif /usr/libexec/PlistBuddy -c \"Print :NSExtension\" \"${INFO_PLIST}\" 2>/dev/null; then\n    echo \"NSExtension already present, skipping\"\nelse\n    /usr/libexec/PlistBuddy -c \"Add :NSExtension dict\" \"${INFO_PLIST}\"\n    /usr/libexec/PlistBuddy -c \"Add :NSExtension:NSExtensionPointIdentifier string com.apple.widgetkit-extension\" \"${INFO_PLIST}\"\n    echo \"Injected NSExtension into Info.plist\"\nfi\n";
 		};
+		CC001A0A2F70000000BE602F /* Inject NSExtension into Info.plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Inject NSExtension into Info.plist";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "INFO_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\nif /usr/libexec/PlistBuddy -c \"Print :NSExtension\" \"${INFO_PLIST}\" 2>/dev/null; then\n    echo \"NSExtension already present, skipping\"\nelse\n    /usr/libexec/PlistBuddy -c \"Add :NSExtension dict\" \"${INFO_PLIST}\"\n    /usr/libexec/PlistBuddy -c \"Add :NSExtension:NSExtensionPointIdentifier string com.apple.widgetkit-extension\" \"${INFO_PLIST}\"\n    echo \"Injected NSExtension into Info.plist\"\nfi\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AA001A022F60B4AE00BE602F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB001A022F70000000BE602F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CC001A022F70000000BE602F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -249,6 +438,16 @@
 			isa = PBXTargetDependency;
 			target = AA001A052F60B4AE00BE602F /* DreamingWidget */;
 			targetProxy = AA001A092F60B4AE00BE602F /* PBXContainerItemProxy */;
+		};
+		BB001A0B2F70000000BE602F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CC001A052F70000000BE602F /* DreamingWatchWidget */;
+			targetProxy = BB001A0C2F70000000BE602F /* PBXContainerItemProxy */;
+		};
+		EE001A062F70000000BE602F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BB001A052F70000000BE602F /* DreamingWatchApp */;
+			targetProxy = EE001A072F70000000BE602F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -310,6 +509,112 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BB001A062F70000000BE602F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = DreamingWatchApp/DreamingWatchApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LK54QL2X7K;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "com.mali.stories.Dreaming-spanis-widgett";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		BB001A072F70000000BE602F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = DreamingWatchApp/DreamingWatchApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LK54QL2X7K;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "com.mali.stories.Dreaming-spanis-widgett";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		CC001A062F70000000BE602F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = DreamingWatchWidget/DreamingWatchWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LK54QL2X7K;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSExtensionWidgetWantsSizeLargerThanScreen = NO;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.watchkitapp.DreamingWatchWidget";
+				PRODUCT_NAME = DreamingWatchWidget;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		CC001A072F70000000BE602F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = DreamingWatchWidget/DreamingWatchWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LK54QL2X7K;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSExtensionWidgetWantsSizeLargerThanScreen = NO;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.watchkitapp.DreamingWatchWidget";
+				PRODUCT_NAME = DreamingWatchWidget;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
 			};
 			name = Release;
 		};
@@ -506,6 +811,24 @@
 			buildConfigurations = (
 				AA001A062F60B4AE00BE602F /* Debug */,
 				AA001A072F60B4AE00BE602F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB001A082F70000000BE602F /* Build configuration list for PBXNativeTarget "DreamingWatchApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB001A062F70000000BE602F /* Debug */,
+				BB001A072F70000000BE602F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CC001A082F70000000BE602F /* Build configuration list for PBXNativeTarget "DreamingWatchWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC001A062F70000000BE602F /* Debug */,
+				CC001A072F70000000BE602F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
