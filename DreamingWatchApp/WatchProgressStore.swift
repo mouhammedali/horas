@@ -47,6 +47,19 @@ final class WatchProgressStore: NSObject, ObservableObject {
             self.save()
         }
     }
+
+    /// Pull the latest data from the iPhone. Wakes the iPhone app in the
+    /// background, so it works even when the phone app isn't open.
+    func requestSync() {
+        let session = WCSession.default
+        guard session.activationState == .activated, session.isReachable else { return }
+        session.sendMessage(["request": "sync"], replyHandler: { [weak self] reply in
+            guard let self else { return }
+            Task { @MainActor in self.handleReceived(reply) }
+        }, errorHandler: { error in
+            print("[WatchStore] sync request failed: \(error)")
+        })
+    }
 }
 
 extension WatchProgressStore: WCSessionDelegate {
@@ -61,6 +74,8 @@ extension WatchProgressStore: WCSessionDelegate {
             if !ctx.isEmpty {
                 Task { @MainActor in self.handleReceived(ctx) }
             }
+            // Also pull fresh data from the iPhone if it's reachable
+            Task { @MainActor in self.requestSync() }
         }
     }
 

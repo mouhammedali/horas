@@ -17,6 +17,7 @@ struct WatchContentView: View {
             statsTab
         }
         .tabViewStyle(.verticalPage)
+        .task { store.requestSync() }
     }
 
     // MARK: Tab 1 — Progress ring

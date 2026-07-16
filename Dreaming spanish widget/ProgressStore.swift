@@ -17,11 +17,24 @@ import UIKit
 final class ProgressStore {
     static let appGroupID = AppGroupKeys.appGroupID
     private static let dataKey = AppGroupKeys.progressData
+    private static let iCloudKey = AppGroupKeys.iCloudProgressData
+    private static let iCloudSyncEnabledKey = AppGroupKeys.iCloudSyncEnabled
 
     private let defaults: UserDefaults
+    private let iCloud = NSUbiquitousKeyValueStore.default
 
     var data: ProgressData = .placeholder
     var isSyncing: Bool = false
+
+    var iCloudSyncEnabled: Bool {
+        get { defaults.bool(forKey: Self.iCloudSyncEnabledKey) }
+        set {
+            defaults.set(newValue, forKey: Self.iCloudSyncEnabledKey)
+            if newValue {
+                pushToiCloud()
+            }
+        }
+    }
 
     private var activeScraper: BackgroundScraper?
 
@@ -30,6 +43,17 @@ final class ProgressStore {
         load()
         // Activate WatchConnectivity early so the session is ready before first save()
         _ = WatchConnectivityBridge.shared
+        // Listen for iCloud changes from other devices
+        NotificationCenter.default.addObserver(
+            forName: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
+            object: iCloud,
+            queue: .main
+        ) { [weak self] notification in
+            Task { @MainActor in self?.handleiCloudChange(notification) }
+        }
+        iCloud.synchronize()
+        // Pull any existing iCloud data on launch
+        if iCloudSyncEnabled { pullFromiCloud() }
     }
 
     // MARK: - Persistence
@@ -47,6 +71,40 @@ final class ProgressStore {
         defaults.set(encoded, forKey: Self.dataKey)
         WidgetCenter.shared.reloadAllTimelines()
         WatchConnectivityBridge.shared.sendToWatch(data)
+        if iCloudSyncEnabled { pushToiCloud() }
+    }
+
+    // MARK: - iCloud Sync
+
+    private func pushToiCloud() {
+        guard let encoded = try? JSONEncoder().encode(data) else { return }
+        iCloud.set(encoded, forKey: Self.iCloudKey)
+        iCloud.synchronize()
+    }
+
+    private func pullFromiCloud() {
+        guard
+            let raw = iCloud.data(forKey: Self.iCloudKey),
+            let remote = try? JSONDecoder().decode(ProgressData.self, from: raw)
+        else { return }
+        // Accept remote data only if it's newer
+        if remote.lastUpdated > data.lastUpdated {
+            data = remote
+            // Persist locally + update widget/watch
+            guard let encoded = try? JSONEncoder().encode(data) else { return }
+            defaults.set(encoded, forKey: Self.dataKey)
+            WidgetCenter.shared.reloadAllTimelines()
+            WatchConnectivityBridge.shared.sendToWatch(data)
+        }
+    }
+
+    private func handleiCloudChange(_ notification: Notification) {
+        guard iCloudSyncEnabled else { return }
+        guard let reason = notification.userInfo?[NSUbiquitousKeyValueStoreChangeReasonKey] as? Int else { return }
+        if reason == NSUbiquitousKeyValueStoreServerChange ||
+           reason == NSUbiquitousKeyValueStoreInitialSyncChange {
+            pullFromiCloud()
+        }
     }
 
     // MARK: - Updates

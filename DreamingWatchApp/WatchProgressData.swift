@@ -24,7 +24,7 @@ struct WatchProgressData: Codable {
     }
     var goalReached: Bool { totalTodayProgress >= 1.0 }
 
-    static let groupID = "group.com.mali.stories.DreamingWatch"
+    static let groupID = "group.com.mohamedali.horas.watch"
     static let localDefaultsKey = "watchProgressData"
 
     static var placeholder: WatchProgressData {

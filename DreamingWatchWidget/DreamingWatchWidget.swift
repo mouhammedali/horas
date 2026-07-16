@@ -23,8 +23,9 @@ struct WatchProgressProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<WatchEntry>) -> Void) {
-        let entry = WatchEntry(date: Date(), data: loadData())
-        let next = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
+        let data = loadData()
+        let entry = WatchEntry(date: Date(), data: data)
+        let next = Calendar.current.date(byAdding: .minute, value: 15, to: Date())!
         completion(Timeline(entries: [entry], policy: .after(next)))
     }
 
@@ -78,7 +79,7 @@ struct WatchWidgetEntryView: View {
 
     // Rectangular — DS label + progress bar + stats
     private var rectangularView: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 1) {
             Text("Dreaming Spanish")
                 .font(.system(.caption2, weight: .semibold))
                 .widgetAccentable()
@@ -91,7 +92,9 @@ struct WatchWidgetEntryView: View {
             Text("\(entry.data.streakDays)wk streak · \(String(format: "%.0f", entry.data.totalHours))h total")
                 .font(.system(size: 10))
                 .foregroundStyle(.secondary)
+                .padding(.bottom, 2)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     // Inline — single-line with DS prefix

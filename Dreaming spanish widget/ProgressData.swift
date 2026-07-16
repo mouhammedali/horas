@@ -11,7 +11,7 @@ import Foundation
 // MARK: - Shared UserDefaults keys (App Group)
 
 enum AppGroupKeys {
-    static let appGroupID    = "group.com.mali.stories.DreamingWidget"
+    static let appGroupID    = "group.com.mohamedali.horas"
     static let progressData  = "progressData"
     static let syncRequested = "syncRequested"
     static let syncFailed    = "syncFailed"
@@ -19,6 +19,8 @@ enum AppGroupKeys {
     static let apiURL               = "dsProgressAPIURL"
     static let apiHeaders           = "dsProgressAPIHeaders"
     static let openAddHoursOnLaunch = "openAddHoursOnLaunch"
+    static let iCloudSyncEnabled    = "iCloudSyncEnabled"
+    static let iCloudProgressData   = "iCloudProgressData"
 }
 
 struct RecentEntry: Codable, Identifiable {

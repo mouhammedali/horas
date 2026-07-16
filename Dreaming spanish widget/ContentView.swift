@@ -238,6 +238,7 @@ struct DashboardView: View {
             VStack(spacing: 20) {
                 statsGrid
                 if !filteredEntries.isEmpty { recentSessionsSection }
+                iCloudSyncToggle
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -252,6 +253,7 @@ struct DashboardView: View {
             DailyGoalCard(data: data)
             statsGrid.padding(.horizontal)
             if !filteredEntries.isEmpty { recentSessionsSection }
+            iCloudSyncToggle.padding(.horizontal)
         }
     }
 
@@ -303,6 +305,30 @@ struct DashboardView: View {
                 .font(.caption)
                 .foregroundStyle(.tertiary)
         }
+    }
+
+    private var iCloudSyncToggle: some View {
+        Toggle(isOn: Binding(
+            get: { store.iCloudSyncEnabled },
+            set: { store.iCloudSyncEnabled = $0 }
+        )) {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("iCloud Sync")
+                        .font(.subheadline.weight(.medium))
+                    Text("Sync progress across your devices")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } icon: {
+                Image(systemName: "icloud")
+                    .foregroundStyle(.blue)
+            }
+        }
+        .tint(.blue)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 14))
     }
 
     private var recentSessionsSection: some View {

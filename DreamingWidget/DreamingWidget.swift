@@ -38,7 +38,23 @@ struct ProgressTimelineProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<ProgressEntry>) -> Void) {
         let defaults = UserDefaults(suiteName: Self.appGroupID)
-        let data = load() ?? .placeholder
+        var data = load() ?? .placeholder
+
+        // Pull from iCloud if sync is enabled and remote data is newer
+        let iCloudEnabled = defaults?.bool(forKey: AppGroupKeys.iCloudSyncEnabled) ?? false
+        if iCloudEnabled {
+            let iCloud = NSUbiquitousKeyValueStore.default
+            iCloud.synchronize()
+            if let raw = iCloud.data(forKey: AppGroupKeys.iCloudProgressData),
+               let remote = try? JSONDecoder().decode(ProgressData.self, from: raw),
+               remote.lastUpdated > data.lastUpdated {
+                data = remote
+                // Persist locally so app + other widgets pick it up
+                if let encoded = try? JSONEncoder().encode(data) {
+                    defaults?.set(encoded, forKey: Self.dataKey)
+                }
+            }
+        }
 
         let syncDate  = defaults?.object(forKey: AppGroupKeys.syncRequested) as? Date
         let isSyncing = syncDate.map { Date().timeIntervalSince($0) < 90 } ?? false
@@ -46,7 +62,8 @@ struct ProgressTimelineProvider: TimelineProvider {
 
         let entry = ProgressEntry(date: Date(), data: data, isSyncing: isSyncing, syncFailed: syncFailed)
 
-        let waitMinutes = isSyncing ? 1 : 30
+        // Refresh more often when iCloud sync is on (every 15 min) to pick up remote changes
+        let waitMinutes = isSyncing ? 1 : (iCloudEnabled ? 15 : 30)
         let nextRefresh = Calendar.current.date(byAdding: .minute, value: waitMinutes, to: Date())!
         completion(Timeline(entries: [entry], policy: .after(nextRefresh)))
     }
@@ -447,9 +464,10 @@ struct LargeWidgetView: View {
             .containerBackground(for: .widget) { bgColor }
             .widgetURL(URL(string: "dswidget://login"))
         } else {
-            VStack(spacing: 16) {
+            VStack(spacing: 0) {
                 // Header
-                HStack {
+                HStack(spacing: 6) {
+                    SpanishFlagBadge(size: 18)
                     VStack(alignment: .leading, spacing: 2) {
                         if data.totalTodayProgress >= 1 {
                             Label("Goal reached!", systemImage: "checkmark.seal.fill")
@@ -490,13 +508,17 @@ struct LargeWidgetView: View {
                     }
                 }
 
+                Spacer(minLength: 8)
+
                 // Large ring
                 ProgressRing(
                     progress: data.totalTodayProgress,
-                    lineWidth: 14, color: data.ringColor, size: 160,
+                    lineWidth: 14, color: data.ringColor, size: 148,
                     todayMinutes: data.totalTodayMinutes,
                     goalMinutes: data.dailyGoalMinutes
                 )
+
+                Spacer(minLength: 8)
 
                 // Stats grid
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
@@ -514,6 +536,8 @@ struct LargeWidgetView: View {
                     }
                 }
 
+                Spacer(minLength: 8)
+
                 // Last synced footer
                 HStack(spacing: 4) {
                     Image(systemName: isSyncing ? "arrow.triangle.2.circlepath" : "clock.arrow.circlepath")
@@ -522,11 +546,6 @@ struct LargeWidgetView: View {
                         .font(.system(size: 11))
                 }
                 .foregroundStyle(.white.opacity(0.3))
-            }
-            .padding(16)
-            .overlay(alignment: .topLeading) {
-                SpanishFlagBadge(size: 18)
-                    .padding(.top, 4)
             }
             .containerBackground(for: .widget) { bgColor }
         }

@@ -112,8 +112,8 @@
 		BB001A012F70000000BE602F /* DreamingWatchApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				BB001A0F2F70000000BE602F /* Exceptions for "DreamingWatchApp" folder in "DreamingWatchWidget" target */,
 				BB001A102F70000000BE602F /* Exceptions for "DreamingWatchApp" folder in "Dreaming spanish widget" target */,
+				BB001A0F2F70000000BE602F /* Exceptions for "DreamingWatchApp" folder in "DreamingWatchWidget" target */,
 			);
 			path = DreamingWatchApp;
 			sourceTree = "<group>";
@@ -459,7 +459,7 @@
 				CODE_SIGN_ENTITLEMENTS = DreamingWidget/DreamingWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LK54QL2X7K;
+				DEVELOPMENT_TEAM = T2X99L9XGN;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -471,7 +471,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.DreamingWidget";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedali.horas.DreamingWidget;
 				PRODUCT_NAME = DreamingWidget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -489,7 +489,7 @@
 				CODE_SIGN_ENTITLEMENTS = DreamingWidget/DreamingWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LK54QL2X7K;
+				DEVELOPMENT_TEAM = T2X99L9XGN;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -501,7 +501,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.DreamingWidget";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedali.horas.DreamingWidget;
 				PRODUCT_NAME = DreamingWidget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -515,15 +515,17 @@
 		BB001A062F70000000BE602F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = DreamingWatchApp/DreamingWatchApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LK54QL2X7K;
+				DEVELOPMENT_TEAM = T2X99L9XGN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "com.mali.stories.Dreaming-spanis-widgett";
+				INFOPLIST_KEY_CFBundleDisplayName = Horas;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.mohamedali.horas;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedali.horas.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = NO;
@@ -538,15 +540,17 @@
 		BB001A072F70000000BE602F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = DreamingWatchApp/DreamingWatchApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LK54QL2X7K;
+				DEVELOPMENT_TEAM = T2X99L9XGN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "com.mali.stories.Dreaming-spanis-widgett";
+				INFOPLIST_KEY_CFBundleDisplayName = Horas;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.mohamedali.horas;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.watchkitapp";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedali.horas.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = NO;
@@ -565,7 +569,7 @@
 				CODE_SIGN_ENTITLEMENTS = DreamingWatchWidget/DreamingWatchWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LK54QL2X7K;
+				DEVELOPMENT_TEAM = T2X99L9XGN;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -576,7 +580,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.watchkitapp.DreamingWatchWidget";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedali.horas.watchkitapp.DreamingWatchWidget;
 				PRODUCT_NAME = DreamingWatchWidget;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -595,7 +599,7 @@
 				CODE_SIGN_ENTITLEMENTS = DreamingWatchWidget/DreamingWatchWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LK54QL2X7K;
+				DEVELOPMENT_TEAM = T2X99L9XGN;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -606,7 +610,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett.watchkitapp.DreamingWatchWidget";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedali.horas.watchkitapp.DreamingWatchWidget;
 				PRODUCT_NAME = DreamingWatchWidget;
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -745,9 +749,10 @@
 				CODE_SIGN_ENTITLEMENTS = "Dreaming spanish widget/Dreaming_spanis_widget.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LK54QL2X7K;
+				DEVELOPMENT_TEAM = T2X99L9XGN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Horas;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -758,7 +763,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedali.horas;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -778,9 +783,10 @@
 				CODE_SIGN_ENTITLEMENTS = "Dreaming spanish widget/Dreaming_spanis_widget.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LK54QL2X7K;
+				DEVELOPMENT_TEAM = T2X99L9XGN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Horas;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -791,7 +797,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.mali.stories.Dreaming-spanis-widgett";
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedali.horas;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
