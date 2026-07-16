@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horas — Track your Spanish input hours</title>
+<meta name="description" content="Horas is a privacy-first companion app for Dreaming Spanish learners. Daily goal, streak, and total hours as widgets on your home screen, lock screen, and Apple Watch.">
+<meta property="og:title" content="Horas — for Dreaming Spanish">
+<meta property="og:description" content="Your Spanish immersion journey, always on your home screen. No servers, no tracking.">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --bg: #0c1220; --surface: #161c2e; --text: #eef1f8;
+    --muted: #9aa7c0; --coral: #ed5c42; --blue: #4a80f5; --gold: #ffd84d;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 96px 0 64px; text-align: center; }
+  .ring { width: 132px; height: 132px; margin: 0 auto 28px; display: block; }
+  h1 { font-size: 56px; letter-spacing: -1px; }
+  h1 span { background: linear-gradient(90deg, var(--coral), var(--blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .tagline { font-size: 22px; color: var(--muted); margin-top: 10px; }
+  .badge { display: inline-block; margin-top: 32px; padding: 12px 26px;
+    border: 1px solid #2a3350; border-radius: 999px; color: var(--muted); font-size: 15px; }
+  section { padding: 48px 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .card { background: var(--surface); border-radius: 18px; padding: 26px; }
+  .card .icon { font-size: 30px; }
+  .card h3 { margin: 12px 0 6px; font-size: 18px; }
+  .card p { color: var(--muted); font-size: 15px; }
+  .privacy-banner { background: linear-gradient(135deg, #14251c, #10281e); border: 1px solid #1f4a35; border-radius: 18px; padding: 34px; text-align: center; }
+  .privacy-banner h2 { font-size: 26px; margin-bottom: 10px; }
+  .privacy-banner p { color: #9fc4ae; max-width: 560px; margin: 0 auto; }
+  .privacy-banner a { color: #7fe0a7; }
+  footer { padding: 56px 0 72px; border-top: 1px solid #1d2438; margin-top: 48px; text-align: center; color: var(--muted); font-size: 14px; }
+  footer nav { margin-bottom: 18px; }
+  footer nav a { color: var(--text); text-decoration: none; margin: 0 14px; font-size: 15px; }
+  footer nav a:hover { color: var(--blue); }
+  .disclaimer { max-width: 620px; margin: 0 auto; font-size: 13px; color: #6b7690; }
+  @media (max-width: 600px) { h1 { font-size: 40px; } header { padding: 64px 0 40px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <svg class="ring" viewBox="0 0 132 132" aria-hidden="true">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ed5c42"/><stop offset="1" stop-color="#4a80f5"/>
+    </linearGradient></defs>
+    <circle cx="66" cy="66" r="52" fill="none" stroke="#ffffff14" stroke-width="12"/>
+    <circle cx="66" cy="66" r="52" fill="none" stroke="url(#g)" stroke-width="12"
+      stroke-linecap="round" stroke-dasharray="268 327" transform="rotate(-90 66 66)"/>
+    <g>
+      <clipPath id="c"><circle cx="66" cy="66" r="26"/></clipPath>
+      <g clip-path="url(#c)">
+        <rect x="40" y="40" width="52" height="13" fill="#c71a24"/>
+        <rect x="40" y="53" width="52" height="26" fill="#f9c728"/>
+        <rect x="40" y="79" width="52" height="13" fill="#c71a24"/>
+      </g>
+    </g>
+  </svg>
+  <h1><span>Horas</span></h1>
+  <p class="tagline">Your Spanish immersion journey,<br>always on your home screen.</p>
+  <div class="badge">Coming soon to the App&nbsp;Store</div>
+</header>
+
+<section>
+  <div class="grid">
+    <div class="card"><div class="icon">🎯</div><h3>Daily goal ring</h3>
+      <p>Watch your input minutes fill the ring from coral to blue — and turn gold when you hit your goal.</p></div>
+    <div class="card"><div class="icon">📱</div><h3>Widgets everywhere</h3>
+      <p>Home screen widgets in three sizes, plus lock screen circles and rectangles. Sync and add hours with one tap.</p></div>
+    <div class="card"><div class="icon">⌚️</div><h3>Apple Watch</h3>
+      <p>A full watch app with Smart Stack widgets and watch face complications. Your progress on your wrist.</p></div>
+    <div class="card"><div class="icon">🔥</div><h3>Streaks &amp; stats</h3>
+      <p>Week streak, total hours, hours this month, and minutes remaining today — all at a glance.</p></div>
+    <div class="card"><div class="icon">➕</div><h3>Outside hours</h3>
+      <p>Log podcasts, conversations, and other outside-app listening without leaving your home screen.</p></div>
+    <div class="card"><div class="icon">☁️</div><h3>Your iCloud, optional</h3>
+      <p>Keep iPhone and iPad in sync through your personal iCloud — or don't. It's off by default.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="privacy-banner">
+    <h2>🔒 No servers. No tracking. Nothing collected.</h2>
+    <p>Horas has no backend. Your login goes directly to Dreaming Spanish and nowhere else;
+    your progress lives only on your devices. We couldn't read your data if we wanted to.
+    Read the full <a href="privacy/">privacy policy</a>.</p>
+  </div>
+</section>
+
+<footer>
+  <nav>
+    <a href="./">Home</a>
+    <a href="support/">Support</a>
+    <a href="privacy/">Privacy</a>
+  </nav>
+  <p class="disclaimer">Horas is an independent app and is not affiliated with, endorsed by, or
+  sponsored by Dreaming Spanish. Dreaming Spanish is a trademark of its respective owner.
+  A Dreaming Spanish account is required.</p>
+</footer>
+
+</div>
+</body>
+</html>

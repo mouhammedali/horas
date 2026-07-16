@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support — Horas</title>
+<meta name="description" content="Support and frequently asked questions for Horas, the companion app for Dreaming Spanish learners.">
+<style>
+  :root {
+    --bg: #0c1220; --surface: #161c2e; --text: #eef1f8;
+    --muted: #9aa7c0; --coral: #ed5c42; --blue: #4a80f5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 64px 0 32px; }
+  header a.home { color: var(--muted); text-decoration: none; font-size: 15px; }
+  header a.home:hover { color: var(--blue); }
+  h1 { font-size: 40px; margin-top: 12px; letter-spacing: -0.5px; }
+  .contact { background: var(--surface); border-radius: 18px; padding: 28px; margin: 28px 0 40px; }
+  .contact h2 { font-size: 20px; margin-bottom: 8px; }
+  .contact p { color: var(--muted); }
+  .contact a { color: var(--blue); font-weight: 600; text-decoration: none; }
+  h2.faq-title { font-size: 24px; margin-bottom: 8px; }
+  details { border-bottom: 1px solid #1d2438; padding: 18px 0; }
+  summary { font-weight: 600; cursor: pointer; font-size: 17px; }
+  summary::marker { color: var(--coral); }
+  details p { color: var(--muted); margin-top: 10px; font-size: 16px; }
+  footer { padding: 56px 0 72px; margin-top: 48px; border-top: 1px solid #1d2438; text-align: center; color: var(--muted); font-size: 14px; }
+  footer nav a { color: var(--text); text-decoration: none; margin: 0 14px; font-size: 15px; }
+  footer nav a:hover { color: var(--blue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <a class="home" href="../">← Horas</a>
+  <h1>Support</h1>
+</header>
+
+<div class="contact">
+  <h2>Get in touch</h2>
+  <p>Questions, bugs, or feature requests — email
+  <a href="mailto:mouhammedaliamer@gmail.com">mouhammedaliamer@gmail.com</a>
+  and you'll usually hear back within a couple of days.</p>
+</div>
+
+<h2 class="faq-title">Frequently asked questions</h2>
+
+<details open>
+  <summary>My widget shows zeros or "Open app to log in"</summary>
+  <p>Open the Horas app and log in with your Dreaming Spanish account, then tap Sync.
+  Widgets read the data the app saves, so they need one successful sync first.
+  If a widget still looks stale, remove it from your home screen and add it again.</p>
+</details>
+
+<details>
+  <summary>The widget says "Session expired"</summary>
+  <p>Dreaming Spanish sessions expire from time to time. Open the app and it will
+  prompt you to log in again — your history and streak are unaffected.</p>
+</details>
+
+<details>
+  <summary>My Apple Watch isn't syncing</summary>
+  <p>Open the watch app while your iPhone is nearby — it pulls the latest data from the
+  phone automatically. If it stays empty: make sure the Horas watch app and the iPhone app
+  are both up to date (delete and reinstall the watch app from the Watch app on your iPhone
+  if needed), then open Horas on the iPhone, tap Sync, and reopen the watch app.</p>
+</details>
+
+<details>
+  <summary>How do I sync between iPhone and iPad?</summary>
+  <p>Turn on iCloud sync in the app's settings on both devices. Data moves through your
+  personal iCloud account only — it never touches our servers, because we don't have any.</p>
+</details>
+
+<details>
+  <summary>How often do widgets refresh?</summary>
+  <p>Automatically about every 30 minutes (15 with iCloud sync on), and instantly whenever
+  you open the app or tap the sync button on a widget. iOS may slow refreshes down in
+  Low Power Mode.</p>
+</details>
+
+<details>
+  <summary>Does Horas work without a Dreaming Spanish account?</summary>
+  <p>You need a Dreaming Spanish account for your input-hours data. Horas is an independent
+  companion app — it displays and tracks your progress but is not affiliated with
+  Dreaming Spanish.</p>
+</details>
+
+<details>
+  <summary>What data do you collect?</summary>
+  <p>None. No analytics, no tracking, no accounts with us. See the
+  <a href="../privacy/" style="color:var(--blue)">privacy policy</a> for the full picture.</p>
+</details>
+
+<footer>
+  <nav>
+    <a href="../">Home</a>
+    <a href="./">Support</a>
+    <a href="../privacy/">Privacy</a>
+  </nav>
+  <p>Horas is not affiliated with Dreaming Spanish.</p>
+</footer>
+
+</div>
+</body>
+</html>
